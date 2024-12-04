@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スパムトン構文ジェネレーター</title>
+    <style>
+        body {
+            font-family: 'Noto Sans JP', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.8;
+        }
+        header {
+            background-color: #007BFF;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+            border-bottom: 5px solid #0056b3;
+        }
+        header img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        main {
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        textarea {
+            width: 100%;
+            height: 200px;
+            margin-bottom: 15px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+        textarea:focus {
+            border-color: #007BFF;
+            outline: none;
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .output {
+            white-space: pre-wrap;
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #0056b3;
+            color: white;
+            margin-top: 30px;
+            border-top: 5px solid #003d80;
+        }
+        footer a {
+            color: #ffdd57;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
+        @media (prefers-color-scheme: dark) {
+            body {
+                background-color: #121212;
+                color: #e0e0e0;
+            }
+            textarea {
+                background-color: #1e1e1e;
+                color: #e0e0e0;
+                border: 1px solid #555;
+            }
+            button {
+                background-color: #1a73e8;
+            }
+            button:hover {
+                background-color: #1358a5;
+            }
+            .output {
+                background-color: #1e1e1e;
+                border: 1px solid #555;
+                color: #e0e0e0;
+            }
+            footer {
+                background-color: #003d80;
+                color: #e0e0e0;
+            }
+            footer a {
+                color: #ffdd57;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="iキャッチ3-2-min.png" alt="ヘッダー画像">
+        <h1>スパムトン構文ジェネレーター</h1>
+    </header>
+    <main>
+        <p>以下に文章を入力し、変換ボタンを押してください。</p>
+        <textarea id="inputText" placeholder="ここに文章を入力してください"></textarea>
+        <button onclick="transformText()">変換する</button>
+        <h2>変換結果</h2>
+        <div id="output" class="output"></div>
+    </main>
+    <footer>
+        <p>お問い合わせはこちら → <a href="https://x.com/NBOynevEjR94880" target="_blank">Xアカウント</a></p>
+    </footer>
+    <script>
+        function transformText() {
+            let inputText = document.getElementById("inputText").value;
+
+            const pronounRules = {
+                '私': 'ﾜﾀ94',
+                'わたし': 'ﾜﾀ94',
+                '僕': 'ﾜﾀ94',
+                '俺': 'ﾜﾀ94',
+                'あなた': 'ｱnﾀ',
+                '君': 'ｷ三',
+                'お前': 'ｷミ',
+                '彼': 'スティーブ',
+                '彼女': 'デイブ',
+                '彼ら': '[[しがないスポンジ]]',
+                '彼女ら': '[[ﾍﾞﾄﾍﾞﾄ　ｽﾗｲﾑ]]'
+            };
+
+            const typoRules = {
+                'ん': 'ｎ',
+                'す': 'su',
+                'ない': 'nai',
+                'る': 'ru',
+                'レ': 'し',
+                'し': 'レ',
+                'り': 'ﾘ',
+                '！': '１',
+                'です': 'death',
+                'お': 'を',
+                '大': 'die',
+                'だけ': 'ﾀﾞｹ',
+                '得': 'ﾄｸ',
+                'ン': 'ｿ'
+            };
+
+            const brackets = ['[[', ']]'];
+            const phrases = [
+                '「さあ！いますぐ[[BIG]]に！」',
+                '『[[ナンバーワン セールスマン1997]]』',
+                '「★★もう大きさで悩まない★★」',
+                '『[[イイネとチャンネル登録]]でさらに[[BIG]]！！』',
+                '「[[お値打ち品]]登場！」',
+                '『[[夢のあと]]へ』',
+                '「ﾜﾀ94の[[ハート]]受け止めて！」',
+                '『[[リンクは削除されました]]を早くチェック！！』'
+            ];
+
+            let words = inputText.split(/(\s+)/);
+
+            const insertRandomElement = (arr, element) => {
+                const index = Math.floor(Math.random() * arr.length);
+                arr.splice(index, 0, element);
+            };
+
+            if (Math.random() < 0.3) {
+                insertRandomElement(words, '[[リンクは削除されました]]');
+            }
+
+            if (Math.random() < 0.5) {
+                insertRandomElement(words, phrases[Math.floor(Math.random() * phrases.length)]);
+            }
+
+            inputText = words.join('');
+
+            for (let [key, value] of Object.entries(pronounRules)) {
+                const regex = new RegExp(key, 'g');
+                inputText = inputText.replace(regex, value);
+            }
+
+            for (let [key, value] of Object.entries(typoRules)) {
+                const regex = new RegExp(key, 'g');
+                inputText = inputText.replace(regex, value);
+            }
+
+            inputText = inputText.replace(/(\S+)/g, (word) => {
+                if (Math.random() < 0.5) {
+                    return `${brackets[0]}${word}${brackets[1]}`;
+                }
+                return word;
+            });
+
+            inputText = inputText.replace(/、/g, '、、！').replace(/。/g, '！！！');
+
+            document.getElementById("output").textContent = inputText;
+        }
+    </script>
+</body>
+</html>
+
